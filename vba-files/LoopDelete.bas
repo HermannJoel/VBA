@@ -1,4 +1,6 @@
-Attribute VB_Name = "macros"
+Attribute VB_Name = "LoopDelete"
+
+---vba macros to loop files over a specific folder and loop over worksheet to delete specific words
 
 Sub LoopAllExcelFileFolders()
     Dim ws As Worksheet
