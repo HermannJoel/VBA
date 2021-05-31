@@ -20,10 +20,10 @@ End Function
 
 '''2.Options on forward and futures
 Function BlackOptionValue(iopt, F, X, r, rfgn, tyr, sigma)
-’ returns Black option value for forwards
-’ uses BSOptionValue fn
+    'returns Black option value for forwards
+    'uses BSOptionValue fn
 Dim S
-S=F Ł Exp((rfgn - r) Ł tyr)
+S=F * Exp((rfgn - r) * tyr)
 BlackOptionValue = BSOptionValue(iopt, S, X, r, rfgn, tyr, sigma)
 End Function
 
@@ -31,26 +31,26 @@ End Function
 '''3.Option greeks
 
 Function BSOptionGreeks(igreek, iopt, S, X, r, q, tyr, sigma)
-’ returns BS option greeks (depends on value of igreek)
-’ returns delta(1), gamma(2), rho(3), theta(4) or vega(5)
-’ iopt=1 for call, -1 for put; q=div yld
-’ uses BSOptionValue fn
-’ uses BSDOne fn
-’ uses BSDTwo fn
-’ uses BSNdashDOne fn
-Dim eqt, c, c1, c1d, c2, d, g, v
-eqt = Exp(-q Ł tyr)
-c = BSOptionValue(iopt, S, X, r, q, tyr, sigma)
-c1 = Application.NormSDist(iopt Ł BSDOne(S, X, r, q, tyr, sigma))
-c1d = BSNdashDOne(S, X, r, q, tyr, sigma)
-c2 = Application.NormSDist(iopt Ł BSDTwo(S, X, r, q, tyr, sigma))
-d = iopt Ł eqt Ł c1
-g = c1d Ł eqt / (S Ł sigma Ł Sqr(tyr))
-v = -1
-If igreek = 1 Then v = d
-If igreek = 2 Then v = g
-If igreek = 3 Then v = iopt Ł X Ł tyr Ł Exp(-r Ł tyr) Ł c2
-If igreek = 4 Then v = r Ł c-(r - q) Ł S Ł d - 0.5 Ł (sigma Ł S)O2 Ł g
-If igreek = 5 Then v = S Ł Sqr(tyr) Ł c1d Ł eqt
-BSOptionGreeks = v
+    ' returns BS option greeks (depends on value of igreek)
+    ' returns delta(1), gamma(2), rho(3), theta(4) or vega(5)
+    ' iopt=1 for call, -1 for put; q=div yld
+    ' uses BSOptionValue fn
+    ' uses BSDOne fn
+    ' uses BSDTwo fn
+    ' uses BSNdashDOne fn
+    Dim eqt, c, c1, c1d, c2, d, g, v
+    eqt = Exp(-q * tyr)
+    c = BSOptionValue(iopt, S, X, r, q, tyr, sigma)
+    c1 = Application.NormSDist(iopt * BSDOne(S, X, r, q, tyr, sigma))
+    c1d = BSNdashDOne(S, X, r, q, tyr, sigma)
+    c2 = Application.NormSDist(iopt * BSDTwo(S, X, r, q, tyr, sigma))
+    d = iopt * eqt * c1
+    g = c1d * eqt / (S * sigma * Sqr(tyr))
+    v = -1
+    If igreek = 1 Then v = d
+    If igreek = 2 Then v = g
+    If igreek = 3 Then v = iopt * X * tyr * Exp(-r * tyr) * c2
+    If igreek = 4 Then v = r * c-(r - q) * S * d - 0.5 * (sigma * S)^2 * g
+    If igreek = 5 Then v = S * Sqr(tyr) * c1d * eqt
+    BSOptionGreeks = v
 End Function
