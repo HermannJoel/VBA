@@ -75,8 +75,8 @@ End Function
 Function BSDelta(S, K, T, r, v, PutCall As String)
     d = (Log(S / K) + T * (r + 0.5 * v ^ 2)) / (v * Sqr(T))
     Select Case PutCall
-    Case "Call": BSDelta = Gauss(d)
-    Case "Put": BSDelta = Gauss(d) - 1
+        Case "Call": BSDelta = Gauss(d)
+        Case "Put": BSDelta = Gauss(d) - 1
     End Select
 End Function
 
@@ -93,18 +93,16 @@ End Function
 Function BSRho(S, K, T, r, v, PutCall As String)
     d = (Log(S / K) + T * (r + 0.5 * v ^ 2)) / (v * Sqr(T))
     Select Case PutCall
-    Case "Call": BSRho = T * K * Exp(-r * T) * Gauss(d - v * Sqr(T))
-    Case "Put": BSRho = -T * K * Exp(-r * T) * Gauss(v * Sqr(T) - d)
+        Case "Call": BSRho = T * K * Exp(-r * T) * Gauss(d - v * Sqr(T))
+        Case "Put": BSRho = -T * K * Exp(-r * T) * Gauss(v * Sqr(T) - d)
     End Select
 End Function
 
 Function BSTheta(S, K, T, r, v, PutCall As String)
     d = (Log(S / K) + T * (r + 0.5 * v ^ 2)) / (v * Sqr(T))
     Select Case PutCall
-    Case "Call": BSTheta = -S * Fz(d) * v / 2 / Sqr(T) 
-        - r * K * Exp(-r * T) * Gauss(d - v * Sqr(T))
-    Case "Put": BSTheta = -S * Fz(d) * v / 2 / Sqr(T)
-        + r * K * Exp(-r * T) * Gauss(v * Sqr(T) - d)
+        Case "Call": BSTheta = -S * Fz(d) * v / 2 / Sqr(T) - r * K * Exp(-r * T) * Gauss(d - v * Sqr(T))
+        Case "Put": BSTheta = -S * Fz(d) * v / 2 / Sqr(T) + r * K * Exp(-r * T) * Gauss(v * Sqr(T) - d)
     End Select
 End Function
 
