@@ -106,72 +106,67 @@ Function BarrierBin(Spot, Strike, Bar, T, r, v, old_n, PutCall As String,
     Else
     For i = 1 To 99
         If (F(i) < old_n) And (old_n < F(i + 1)) Then
-        n = Application.Floor(F(i + 1), 1)
-    Exit For
+            n = Application.Floor(F(i + 1), 1)
+        Exit For
+        End If
+    Next i
     End If
-Next i
-End If
 
 '2 step CRR parameters
-dt = T / n: u = Exp(v * Sqr(dt))
-d = 1 / u: p = (Exp(r * dt) - d) / (u - d)
-exp_rT = Exp(-r * dt)
-For i = 1 To n + 1
-AssetPrice = Spot * u ^ (n + 1 - i) * d ^ (i - 1)
-If ((BarType = "DO" Or BarType = "DI")
-And AssetPrice <= Bar) Or
-((BarType = "UO" Or BarType = "UI")
-And AssetPrice >= Bar) Then
-Op(i, n + 1) = 0
-ElseIf PutCall = "Call" Then
-Op(i, n + 1) = Application.Max(AssetPrice - Strike, 0)
-End If
-Next i
-For j = n To 1 Step -1
-For i = 1 To j
-AssetPrice = Spot * u ^ (j - i) * d ^ (i - 1)
-If ((BarType = "DO" Or BarType = "DI")
+    dt = T / n: u = Exp(v * Sqr(dt))
+    d = 1 / u: p = (Exp(r * dt) - d) / (u - d)
+    exp_rT = Exp(-r * dt)
+    For i = 1 To n + 1
+    AssetPrice = Spot * u ^ (n + 1 - i) * d ^ (i - 1)
+        If  ((BarType = "DO" Or BarType = "DI")
+                And AssetPrice <= Bar) Or
+            ((BarType = "UO" Or BarType = "UI")
+                And AssetPrice >= Bar) Then
+            Op(i, n + 1) = 0
+        ElseIf PutCall = "Call" Then
+            Op(i, n + 1) = Application.Max(AssetPrice - Strike, 0)
+        End If
+    Next i
+    For j = n To 1 Step -1
+    For i = 1 To j
+    AssetPrice = Spot * u ^ (j - i) * d ^ (i - 1)
+        If ((BarType = "DO" Or BarType = "DI") _
+                And AssetPrice <= Bar) Or _
+                ((BarType = "UO" Or BarType = "UI") _
+                And AssetPrice >= Bar) Then _
+                Op(i, j) = 0
+        Else
+            Op(i, j) = exp_rT * (p * Op(i, j + 1) + _
+            (1 - p) * Op(i + 1, j + 1))
+        End If
+    Next i
+    Next j
 
-And AssetPrice <= Bar) Or _
-((BarType = "UO" Or BarType = "UI")
-And AssetPrice >= Bar) Then
-Op(i, j) = 0
-Else
-Op(i, j) = exp_rT * (p * Op(i, j + 1)
-+ (1 - p) * Op(i + 1, j + 1))
-End If
-Next i
-Next j
+    If BarType = "DO" Or BarType = "UO" Then output(1, 1) = Op(1, 1)
 
+    Else
+    Select Case EuroAmer
+    Case "Euro"
+        If PutCall = "Call" Then
+            output(1, 1) = fbinomial(Spot, Strike, r, v, T, n, "Call", "Euro") - Op(1, 1)
 
-If BarType = "DO" Or BarType = "UO" Then
-output(1, 1) = Op(1, 1)
-Else
-Select Case EuroAmer
-Case "Euro"
-If PutCall = "Call" Then
-output(1, 1) = fbinomial(Spot, Strike, r, v, T, n,
-"Call", "Euro") - Op(1, 1)
-ElseIf PutCall = "Put" Then
-output(1, 1) = fbinomial(Spot, Strike, r, v, T, n,
-"Put", "Euro") - Op(1, 1)
-End If
-Case "Amer"
-If PutCall = "Call" And BarType = "DI" Then
-output(1, 1) = (Spot / Bar) ^ (1 - 2 * r / v ^ 2) *
-fbinomial(Bar ^ 2 / Spot, Strike, r, v, T, n,
-"Call", "Amer")
-ElseIf PutCall = "Put" And BarType = "UI" Then
-output(1, 1) = (Spot / Bar) ^ (1 - 2 * r / v ^ 2) *
-fbinomial(Bar ^ 2 / Spot, Strike, r, v, T, n,
-"Put","Amer")
-ElseIf (PutCall = "Put" And BarType = "DI") Then
-MsgBox "You Cannot Price an American Down-and-In Put
-Using This Algorithm"
-ElseIf (PutCall = "Call" And BarType = "UI") Then
-MsgBox "You Cannot Price an American Up-and-In Call
-Using This Algorithm"
-End If
+        ElseIf PutCall = "Put" Then
+            output(1, 1) = fbinomial(Spot, Strike, r, v, T, n, "Put", "Euro") - Op(1, 1)
+        End If
+    Case "Amer"
+        If PutCall = "Call" And BarType = "DI" Then
+            output(1, 1) = (Spot / Bar) ^ (1 - 2 * r / v ^ 2) * _
+            fbinomial(Bar ^ 2 / Spot, Strike, r, v, T, n, "Call", "Amer")
+        ElseIf PutCall = "Put" And BarType = "UI" Then
+            output(1, 1) = (Spot / Bar) ^ (1 - 2 * r / v ^ 2) * _
+            fbinomial(Bar ^ 2 / Spot, Strike, r, v, T, n, "Put","Amer")
+        ElseIf (PutCall = "Put" And BarType = "DI") Then
+            MsgBox "You Cannot Price an American Down-and-In Put _
+                    Using This Algorithm"
+        ElseIf (PutCall = "Call" And BarType = "UI") Then
+            MsgBox "You Cannot Price an American Up-and-In Call _
+                    Using This Algorithm"
+        End If
 End Select
 End If
 output(2, 1) = n
