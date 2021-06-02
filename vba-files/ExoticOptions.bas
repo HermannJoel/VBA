@@ -118,10 +118,10 @@ Function BarrierBin(Spot, Strike, Bar, T, r, v, old_n, PutCall As String,
     exp_rT = Exp(-r * dt)
     For i = 1 To n + 1
     AssetPrice = Spot * u ^ (n + 1 - i) * d ^ (i - 1)
-        If  ((BarType = "DO" Or BarType = "DI")
-                And AssetPrice <= Bar) Or
-            ((BarType = "UO" Or BarType = "UI")
-                And AssetPrice >= Bar) Then
+        If  ((BarType = "DO" Or BarType = "DI") And _
+            AssetPrice <= Bar) Or _
+            ((BarType = "UO" Or BarType = "UI") And _
+            AssetPrice >= Bar) Then
             Op(i, n + 1) = 0
         ElseIf PutCall = "Call" Then
             Op(i, n + 1) = Application.Max(AssetPrice - Strike, 0)
@@ -130,11 +130,11 @@ Function BarrierBin(Spot, Strike, Bar, T, r, v, old_n, PutCall As String,
     For j = n To 1 Step -1
     For i = 1 To j
     AssetPrice = Spot * u ^ (j - i) * d ^ (i - 1)
-        If ((BarType = "DO" Or BarType = "DI") _
-                And AssetPrice <= Bar) Or _
-                ((BarType = "UO" Or BarType = "UI") _
-                And AssetPrice >= Bar) Then _
-                Op(i, j) = 0
+        If ((BarType = "DO" Or BarType = "DI") And _
+            AssetPrice <= Bar) Or _
+            ((BarType = "UO" Or BarType = "UI") And _
+            AssetPrice >= Bar) Then 
+            Op(i, j) = 0
         Else
             Op(i, j) = exp_rT * (p * Op(i, j + 1) + _
             (1 - p) * Op(i + 1, j + 1))
@@ -142,7 +142,9 @@ Function BarrierBin(Spot, Strike, Bar, T, r, v, old_n, PutCall As String,
     Next i
     Next j
 
-    If BarType = "DO" Or BarType = "UO" Then output(1, 1) = Op(1, 1)
+
+    If BarType = "DO" Or BarType = "UO" Then 
+        output(1, 1) = Op(1, 1)
 
     Else
     Select Case EuroAmer
@@ -157,7 +159,7 @@ Function BarrierBin(Spot, Strike, Bar, T, r, v, old_n, PutCall As String,
         If PutCall = "Call" And BarType = "DI" Then
             output(1, 1) = (Spot / Bar) ^ (1 - 2 * r / v ^ 2) * _
             fbinomial(Bar ^ 2 / Spot, Strike, r, v, T, n, "Call", "Amer")
-        ElseIf PutCall = "Put" And BarType = "UI" Then
+        ElseIf PutCall = "Put" And BarType = "UI" Then 
             output(1, 1) = (Spot / Bar) ^ (1 - 2 * r / v ^ 2) * _
             fbinomial(Bar ^ 2 / Spot, Strike, r, v, T, n, "Put","Amer")
         ElseIf (PutCall = "Put" And BarType = "DI") Then
@@ -167,8 +169,8 @@ Function BarrierBin(Spot, Strike, Bar, T, r, v, old_n, PutCall As String,
             MsgBox "You Cannot Price an American Up-and-In Call _
                     Using This Algorithm"
         End If
-End Select
-End If
-output(2, 1) = n
-BarrierBin = output
+    End Select
+    End If
+    output(2, 1) = n
+    BarrierBin = output
 End Function
