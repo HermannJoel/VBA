@@ -1,38 +1,5 @@
 Attribute VB_Name = "Consolidation"
 
-Sub MergeMultipleSheetsIntoOneSheet2()
-    'Dim wsSrc As Worksheet   'src = Source, Dest = Destination
-    'Dim wsDest As Worksheet
-    'Dim rngSrc As Range
-    'Dim rngDest As Range
-    'Dim lngLastCol As Long, lngSrcLastRow As Long, lngDestLastRow As Long
-    
-    'Set wsDest = ThisWorkbook.Worksheets("SPX")
-    'lngDestLastRow = LastOccupiedRowNum(wsDest)
-    'lngLastCol = LastOccupiedColNum(wsDest)
-    
-    'Set destination range
-    'Set rngDest = wsDest.Cells(lngDestLastRow + 1, 1)
-    
-    'Loop through all sheets
-    'For Each wsSrc In ThisWorbook.Worksheets
-    
-        'If wsSrc.Name <> "SPX" Then
-        'lngSrcLastRow = LastOccupiedRowNum(wsSrc)
-        
-        'With wsSrc
-            'Set rngSrc = .Range(.Cells(2, 1), .Cells(lngSrcLastRow, lngLastCol))
-            'rngSrc.Copy Destination:=rngDest
-        'End With
-        
-        'lngDestLastRow = LastOccupiedRowNum(wsDest)
-        'Set rngDest = wsDest.Cells(lngDestLastRow + 1, 1)
-        
-        'End If
-        
-    'Next wsSrc
-       
-'End Sub
 Sub MergeWorkbooksIntoMasterWorksheet()
     Dim strDirFiles As String, strFile As String, Filepath As String
     Dim wbDst As Workbook, wbSrc As Workbook
